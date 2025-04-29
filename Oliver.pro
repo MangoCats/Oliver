@@ -10,7 +10,6 @@
 include(httpserver/httpserver.pri)
 
 QT -= gui
-QT += multimedia
 
 CONFIG += c++11 console
 CONFIG -= app_bundle

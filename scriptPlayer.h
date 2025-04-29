@@ -10,7 +10,6 @@
 #define SCRIPTPLAYER_H
 
 #include <QFileInfo>
-#include <QMediaPlayer>
 #include <QMutex>
 #include <QObject>
 #include <QQueue>
