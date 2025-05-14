@@ -4,5 +4,5 @@
 echo "closeAll.sh - starting:"
 pkill kodi
 pkill vlc
-pkill google-chrome
+pkill chrome
 echo "closeAll.sh - exiting."
