@@ -29,8 +29,9 @@ public:
              PlayController();
             ~PlayController();
        void  service(HttpRequest& request, HttpResponse& response);
- QByteArray  playButton( QFileInfo fi, qint32 i );
-    QString  labelFromFileInfo( QFileInfo fi );
+ QByteArray  playButton( QFileInfo fi, qint32 i, bool hide );
+    QString  labelFromFileInfo( QFileInfo fi, bool hide );
+ QByteArray  imageFromFileInfo( QFileInfo fi );
 
 signals:
        void  startPlayer();

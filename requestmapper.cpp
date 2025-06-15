@@ -28,7 +28,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     // For the following pathes, each request gets its own new instance of the related controller.
 
 
-    if (path.startsWith("/play"))
+    if ( path.startsWith("/play") || path.startsWith("/pall") )
     {
         PlayController().service(request, response);
     }
