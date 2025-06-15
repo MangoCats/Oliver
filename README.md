@@ -15,11 +15,16 @@ StartupNotify=false
 Terminal=true
 ```
 
-# to enable VNC to operate when no monitor is connected
-# (to a Raspberry Pi) uncomment and edit the following lines in config.txt
-sudo nano /boot/config.txt
+Scripts added to the folder will automatically be shown on next page reload.
+
+If you add a line:
 ```
-hdmi_force_hotplug=1
-hdmi_group=2
-hdmi_mode=82
+#OliverName=Display Name
 ```
+to the script, that's what will show on the webpage.
+
+If you add a .png file with the same name as the .sh script file, that image
+will be embedded in the webpage.  Recommend resizing images down to 180 pixels
+in width for quicker page rendering and loading.
+
+
