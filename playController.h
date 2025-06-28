@@ -30,6 +30,7 @@ public:
             ~PlayController();
        void  service(HttpRequest& request, HttpResponse& response);
  QByteArray  playButton( QFileInfo fi, qint32 i, bool hide );
+ QByteArray  curFileFirst( QByteArray first );
     QString  labelFromFileInfo( QFileInfo fi, bool hide );
  QByteArray  imageFromFileInfo( QFileInfo fi );
 

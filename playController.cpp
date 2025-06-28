@@ -34,12 +34,15 @@ void PlayController::service(HttpRequest& request, HttpResponse& response)
   scriptFilesMutex.unlock();
   bool hide = !request.getPath().contains( "/pall/" );
 
+  QByteArray first;
   QByteArray name = request.getPath().mid(6);  // Strip off the /play/ portion of path
   foreach ( QFileInfo fi, scriptFiles )
     if ( name.endsWith( ".sh" ) )
       if ( name == fi.fileName().toUtf8() )
-        emit enqueueScript( fi.fileName() );
-
+        { first = name;
+          emit enqueueScript( fi.fileName() );
+        }
+        
   // If anything has been enqueued while timer was not running, this will start the queue running
   emit startPlayer();
 
@@ -79,12 +82,13 @@ void PlayController::service(HttpRequest& request, HttpResponse& response)
   body.append(QString("<H1>%1</H1>\n").arg( hostName ).toUtf8() );
   body.append(QString("<H2>%1</H2>\n").arg( QDateTime::currentDateTime().toString() ).toUtf8() );
 
-  qint32 i = 0;
+  qint32 i = 1;
   scriptFilesMutex.lock();
   if ( scriptFiles.size() < 1 )
     body.append( QString( "No files in "+scriptsPath ).toUtf8() );
    else
     { body.append("<div class=\"grid-container grid-container--fill\">\n");
+      body.append( curFileFirst( first ) );
       foreach ( QFileInfo fi, scriptFiles )
         if ( fi.fileName().endsWith( ".sh" ) )
           body.append( playButton( fi, i++, hide ) );       
@@ -120,6 +124,23 @@ QByteArray PlayController::playButton( QFileInfo fi, qint32 i, bool hide )
   ba.append( "  </center>\n" );
   ba.append( "</a></div>\n" );
   return ba;
+}
+
+/**
+ * @brief PlayController::curFileFirst - if a valid script was enqueued with this
+ *   play request, put the launcher button for that script at first position.  It
+ *   will also be repeated at its normal position in the list.
+ * @param first - filename of button to put first
+ * @return button code, or empty array if no matching script file is found.
+ */
+QByteArray PlayController::curFileFirst( QByteArray first )
+{ if ( first.size() < 4 ) 
+    return QByteArray();
+  foreach ( QFileInfo fi, scriptFiles )
+    if ( fi.fileName().endsWith( ".sh" ) )
+      if ( first == fi.fileName().toUtf8() )
+        return playButton( fi, 0 , false );
+  return QByteArray();
 }
 
 /**
