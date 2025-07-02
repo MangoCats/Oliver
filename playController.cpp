@@ -70,9 +70,20 @@ void PlayController::service(HttpRequest& request, HttpResponse& response)
   body.append("   display: grid;\n");
   body.append("   align-items: center;\n");
   body.append("}\n");
+  
   body.append(".grid-container--fill {\n");
-  body.append("   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n");
+  body.append("  container-type: inline-size;\n");
+  body.append("  display: grid;\n");
+  body.append("  /* Default grid setup for container width < 2000px */\n");
+  body.append("  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\n");
+  body.append("  }\n");
+  body.append("\n");
+  body.append("  @container (min-width: 2000px) { /* When the container's width is 2000px or wider */\n");
+  body.append("  .grid-container--fill {\n");
+  body.append("    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); /* Change minmax for wider containers */\n");
+  body.append("  }\n");
   body.append("}\n");
+  
   body.append("</style>\n");
   body.append("<title>Oliver: Script Launcher</title>\n");
   body.append("</head>\n");
@@ -87,14 +98,36 @@ void PlayController::service(HttpRequest& request, HttpResponse& response)
   if ( scriptFiles.size() < 1 )
     body.append( QString( "No files in "+scriptsPath ).toUtf8() );
    else
-    { body.append("<div class=\"grid-container grid-container--fill\">\n");
+    { body.append("<div class=\"grid-container grid-container--fill\" id=\"gridContainer\">\n");
       body.append( curFileFirst( first ) );
       foreach ( QFileInfo fi, scriptFiles )
         if ( fi.fileName().endsWith( ".sh" ) )
           body.append( playButton( fi, i++, hide ) );       
-      body.append("<div>\n");
+      body.append("</div>\n");
     }
   scriptFilesMutex.unlock();
+  
+  body.append("<script>\n");
+  body.append("const container = document.getElementById('gridContainer');\n");
+  body.append("const images = container.querySelectorAll('img'); // Get all images within the container\n");
+  body.append("\n");
+  body.append("function resizeImages() {\n");
+  body.append("  const containerWidth = container.clientWidth; // Get the container's clientWidth\n");
+  body.append("\n");
+  body.append("  images.forEach(image => { // Loop through each image\n");
+  body.append("    if (containerWidth < 2000) {\n");
+  body.append("      image.width = 180; // Set width to 180 if containerWidth is less than 2000\n");
+  body.append("    } else {\n");
+  body.append("      image.width = 360; // Set width to 360 if containerWidth is 2000 or wider\n");
+  body.append("    }\n");
+  body.append("  });\n");
+  body.append("}\n");
+  body.append("\n");
+  body.append("// Call the function initially on page load\n");
+  body.append("resizeImages();\n");
+  body.append("\n");
+  body.append("</script>\n");
+  
   body.append("</body>\n");
 
   body.append("</html>");
@@ -119,7 +152,7 @@ QByteArray PlayController::playButton( QFileInfo fi, qint32 i, bool hide )
   ba.append( "<div><a href='/play/"+name+"'>\n" );
   ba.append( "  <center>\n" );
   if ( img.size() > 0 )
-    ba.append( "    <img src=\"data:image/png;base64,"+img+"\" width=\"180\"/><br/>\n" );
+    ba.append( "      <img src=\"data:image/png;base64,"+img+"\"/>\n" );
   ba.append( "    "+label+"<br/>\n" );
   ba.append( "  </center>\n" );
   ba.append( "</a></div>\n" );
