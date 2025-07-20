@@ -136,7 +136,10 @@ QByteArray PlayController::playButton( QFileInfo fi, qint32 i, bool hide )
 QByteArray PlayController::curFileFirst( QByteArray first )
 { if ( first.size() < 4 ) 
     return QByteArray();
-  foreach ( QFileInfo fi, scriptFiles )
+  scriptFilesMutex.lock();
+  QFileInfoList fil = scriptFiles;
+  scriptFilesMutex.unlock();
+  foreach ( QFileInfo fi, fil )
     if ( fi.fileName().endsWith( ".sh" ) )
       if ( first == fi.fileName().toUtf8() )
         return playButton( fi, 0 , false );
